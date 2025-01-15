@@ -31,7 +31,7 @@ export class GptController {
     for await (const data of stream) {
       const piece = data.choices[0].delta.content || '';
 
-      console.log(piece);
+      // console.log(piece);
       res.write(piece);
     }
 
