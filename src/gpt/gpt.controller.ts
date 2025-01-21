@@ -1,6 +1,7 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { GptService } from './gpt.service';
 import {
+  ChatWithHistoryDto,
   OrthographyDto,
   ProsConsDiscusserDto,
   TextToAudioDto,
@@ -50,6 +51,11 @@ export class GptController {
 
   @Post('text-to-audio')
   textToAudio(@Body() textToAudioDto: TextToAudioDto) {
-    return this.gptService.textToAudioDto(textToAudioDto);
+    return this.gptService.textToAudio(textToAudioDto);
+  }
+
+  @Post('chat-with-history')
+  async chat(@Body() chatWithHistoryDto: ChatWithHistoryDto) {
+    return this.gptService.chatWithHistory(chatWithHistoryDto);
   }
 }
