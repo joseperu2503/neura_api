@@ -23,18 +23,18 @@ export class ChatService {
     return newChat.save();
   }
 
-  async getChat(chatId: string): Promise<Chat> {
-    return this.chatModel.findById(chatId).exec();
+  async getChat(userId: string, chatId: string): Promise<Chat> {
+    return this.chatModel.findOne({ userId, _id: chatId }).exec();
   }
 
   async getChats(userId: string): Promise<Chat[]> {
     return this.chatModel.find({ userId }).exec();
   }
 
-  async completion(completionDto: CompletionDto) {
+  async completion(userId: string, completionDto: CompletionDto) {
     const { chatId, content } = completionDto;
 
-    const chat = await this.chatModel.findById(chatId).exec();
+    const chat = await this.chatModel.findOne({ userId, _id: chatId }).exec();
 
     if (!chat) {
       throw new Error('Chat not found');
