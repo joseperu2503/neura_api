@@ -55,27 +55,25 @@ export class GptService {
     });
   }
 
-  messages: ChatCompletionMessageParam[] = [];
-
-  async chatWithHistory(chatWithHistoryDto: ChatWithHistoryDto) {
-    this.messages.push({
-      role: 'user',
-      content: chatWithHistoryDto.prompt,
-    });
+  async chatWithHistory(messages: ChatCompletionMessageParam[]) {
+    // messages.push({
+    //   role: 'user',
+    //   content: prompt,
+    // });
 
     const completion = await this.openai.chat.completions.create({
-      messages: this.messages,
+      messages: messages,
       model: 'deepseek-chat',
     });
 
     const response: string =
       completion.choices[0]?.message?.content || 'No response';
 
-    this.messages.push({
-      role: 'system',
-      content: response,
-    });
+    // messages.push({
+    //   role: 'system',
+    //   content: response,
+    // });
 
-    return this.messages;
+    return response;
   }
 }

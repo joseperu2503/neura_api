@@ -1,6 +1,7 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 export class ChatWithHistoryDto {
-  @IsString()
-  readonly prompt: string;
+  @IsArray()
+  readonly messages: ChatCompletionMessageParam[] = [];
 }

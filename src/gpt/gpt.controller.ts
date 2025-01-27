@@ -53,9 +53,4 @@ export class GptController {
   textToAudio(@Body() textToAudioDto: TextToAudioDto) {
     return this.gptService.textToAudio(textToAudioDto);
   }
-
-  @Post('chat-with-history')
-  async chat(@Body() chatWithHistoryDto: ChatWithHistoryDto) {
-    return this.gptService.chatWithHistory(chatWithHistoryDto);
-  }
 }
