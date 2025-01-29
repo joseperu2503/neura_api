@@ -4,7 +4,7 @@ services:
     build:
       context: .
       target: production
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
       - '${SERVER_PORT}:${SERVER_PORT}'
     depends_on:
