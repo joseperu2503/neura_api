@@ -20,6 +20,9 @@ export class Chat {
 
   @Prop({ type: [Message], default: [] })
   messages: Message[];
+
+  @Prop({ default: '' })
+  title: string;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

@@ -56,23 +56,17 @@ export class GptService {
   }
 
   async chatWithHistory(messages: ChatCompletionMessageParam[]) {
-    // messages.push({
-    //   role: 'user',
-    //   content: prompt,
-    // });
-
+    console.log(messages);
     const completion = await this.openai.chat.completions.create({
       messages: messages,
       model: 'deepseek-chat',
     });
+    console.log(completion);
+
+    console.log(completion.choices[0]?.message);
 
     const response: string =
       completion.choices[0]?.message?.content || 'No response';
-
-    // messages.push({
-    //   role: 'system',
-    //   content: response,
-    // });
 
     return response;
   }
