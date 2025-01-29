@@ -3,7 +3,6 @@ services:
     container_name: neura_api_${ENV}
     build:
       context: .
-      target: production
       dockerfile: Dockerfile.prod
     ports:
       - '${SERVER_PORT}:${SERVER_PORT}'
