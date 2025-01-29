@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { GptService } from './gpt.service';
-import { GptController } from './gpt.controller';
+import { GptService } from './services/gpt.service';
+import { GptController } from './controllers/gpt.controller';
 
 @Module({
   controllers: [GptController],

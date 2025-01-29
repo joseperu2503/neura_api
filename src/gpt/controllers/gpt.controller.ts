@@ -1,11 +1,11 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
-import { GptService } from './gpt.service';
+import { GptService } from '../services/gpt.service';
 import {
   OrthographyDto,
   ProsConsDiscusserDto,
   TextToAudioDto,
   TranslateDto,
-} from './dto';
+} from '../dto';
 import { Response } from 'express';
 
 @Controller('gpt')

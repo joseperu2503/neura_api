@@ -6,13 +6,13 @@ import {
   prosConsDiscusserUseCase,
   textToAudioUseCase,
   translateUseCase,
-} from './uses-cases';
+} from '../uses-cases';
 import {
   OrthographyDto,
   ProsConsDiscusserDto,
   TextToAudioDto,
   TranslateDto,
-} from './dto';
+} from '../dto';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources';
 

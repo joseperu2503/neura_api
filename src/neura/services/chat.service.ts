@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Chat, ChatDocument, Message } from '../schemas/chat.schema';
 import { CompletionDto } from '../dto/completion.dto';
-import { GptService } from 'src/gpt/gpt.service';
+import { GptService } from 'src/gpt/services/gpt.service';
 import { Readable } from 'stream';
 
 @Injectable()
