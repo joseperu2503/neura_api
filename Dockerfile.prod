@@ -13,6 +13,7 @@ COPY package.json package-lock.json ./
 # Instalar dependencias con npm (equivalente a 'npm ci' para asegurar instalación limpia)
 RUN npm ci
 
+# ----------------------------------------------------------
 
 # Etapa de construcción (build)
 FROM node:18-alpine3.15 AS builder
@@ -28,6 +29,8 @@ COPY . .
 
 # Compilar la aplicación
 RUN npm run build
+
+# ----------------------------------------------------------
 
 # Etapa para producción (solo dependencias necesarias y código compilado)
 FROM node:18-alpine3.15 AS runner
