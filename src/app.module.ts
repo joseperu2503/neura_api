@@ -9,7 +9,9 @@ import { AuthModule } from './auth/auth.module';
     GptModule,
     ConfigModule.forRoot(),
 
-    MongooseModule.forRoot('mongodb://localhost:27017/neura_db'),
+    MongooseModule.forRoot(
+      `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+    ),
 
     NeuraModule,
 

@@ -20,3 +20,21 @@ npm i -g @nestjs/cli
 ```
 docker compose up -d 
 ```
+
+## Desarrollo
+
+```bash
+docker compose -f docker-compose.dev.yml --env-file .env.dev -p neura_api_dev up -d --build
+```
+
+## Produccion
+
+```bash
+docker compose -f docker-compose.prod.yml --env-file .env.prod -p neura_api_prod up -d --build
+```
+
+## Staging
+
+```bash
+docker compose -f docker-compose.staging.yml --env-file .env.staging -p neura_api_staging up -d --build
+```
