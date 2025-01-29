@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  chatWithHistoryUseCase,
   orthographyCheckUseCase,
   prosConsDiscusserStreamUseCase,
   prosConsDiscusserUseCase,
@@ -7,7 +8,6 @@ import {
   translateUseCase,
 } from './uses-cases';
 import {
-  ChatWithHistoryDto,
   OrthographyDto,
   ProsConsDiscusserDto,
   TextToAudioDto,
@@ -56,18 +56,8 @@ export class GptService {
   }
 
   async chatWithHistory(messages: ChatCompletionMessageParam[]) {
-    console.log(messages);
-    const completion = await this.openai.chat.completions.create({
+    return await chatWithHistoryUseCase(this.openai, {
       messages: messages,
-      model: 'deepseek-chat',
     });
-    console.log(completion);
-
-    console.log(completion.choices[0]?.message);
-
-    const response: string =
-      completion.choices[0]?.message?.content || 'No response';
-
-    return response;
   }
 }

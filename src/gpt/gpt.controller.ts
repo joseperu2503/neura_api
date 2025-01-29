@@ -1,7 +1,6 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { GptService } from './gpt.service';
 import {
-  ChatWithHistoryDto,
   OrthographyDto,
   ProsConsDiscusserDto,
   TextToAudioDto,
