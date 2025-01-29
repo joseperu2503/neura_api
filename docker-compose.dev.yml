@@ -29,8 +29,6 @@ services:
       - neura_net
     environment:
       MONGODB_DATABASE: ${DB_NAME}
-      MONGODB_USER: ${DB_USERNAME}
-      MONGODB_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./mongo/${ENV}:/data/db
 networks:
