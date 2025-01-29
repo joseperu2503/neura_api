@@ -15,6 +15,11 @@ export class ChatController {
     return this.chatService.createChat(user.id);
   }
 
+  @Post('guest')
+  async createGuestChat() {
+    return this.chatService.createGuestChat();
+  }
+
   @Get(':chatId')
   @JwtAuth()
   async getChat(
@@ -37,5 +42,10 @@ export class ChatController {
     @Body() completionDto: CompletionDto,
   ) {
     return this.chatService.completion(user.id, completionDto);
+  }
+
+  @Post('guest/completion')
+  async guestCompletion(@Body() completionDto: CompletionDto) {
+    return this.chatService.completion(null, completionDto);
   }
 }

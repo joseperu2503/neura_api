@@ -15,8 +15,8 @@ class Message {
 
 @Schema({ timestamps: true })
 export class Chat {
-  @Prop({ required: true })
-  userId: string;
+  @Prop({ default: null })
+  userId: string | null;
 
   @Prop({ type: [Message], default: [] })
   messages: Message[];

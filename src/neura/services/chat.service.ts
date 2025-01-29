@@ -23,6 +23,14 @@ export class ChatService {
     return newChat.save();
   }
 
+  async createGuestChat(): Promise<Chat> {
+    const newChat = new this.chatModel({
+      messages: [],
+    });
+
+    return newChat.save();
+  }
+
   async getChat(userId: string, chatId: string): Promise<Chat> {
     return this.chatModel.findOne({ userId, _id: chatId }).exec();
   }
@@ -35,7 +43,7 @@ export class ChatService {
       .exec();
   }
 
-  async completion(userId: string, completionDto: CompletionDto) {
+  async completion(userId: string | null, completionDto: CompletionDto) {
     const { chatId, content } = completionDto;
 
     // Buscar el chat en la base de datos
