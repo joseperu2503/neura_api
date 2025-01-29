@@ -10,7 +10,7 @@ WORKDIR /usr/src/app
 # Copiar los archivos de dependencias
 COPY package.json package-lock.json ./
 
-# Instalar dependencias con npm (equivalente a 'npm ci' para asegurar instalación limpia)
+# Instalar dependencias con npm
 RUN npm ci
 
 # ----------------------------------------------------------
