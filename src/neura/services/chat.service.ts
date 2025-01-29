@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Chat, ChatDocument } from '../schemas/chat.schema';
+import { Chat, ChatDocument, Message } from '../schemas/chat.schema';
 import { CompletionDto } from '../dto/completion.dto';
 import { GptService } from 'src/gpt/gpt.service';
+import { Readable } from 'stream';
 
 @Injectable()
 export class ChatService {
@@ -48,7 +49,6 @@ export class ChatService {
 
     // Buscar el chat en la base de datos
     const chat = await this.chatModel.findOne({ userId, _id: chatId }).exec();
-
     if (!chat) {
       throw new Error('Chat not found');
     }
@@ -62,23 +62,43 @@ export class ChatService {
 
     // Si es el primer mensaje del usuario, establecer un título
     if (chat.messages.length === 1) {
-      chat.title = this.generateChatTitle(content); // Generar un título basado en el contenido
+      chat.title = this.generateChatTitle(content);
     }
 
-    // Obtener la respuesta del asistente (usando tu servicio GPT)
-    const response = await this.gptService.chatWithHistory(chat.messages);
-
-    // Agregar la respuesta del asistente al chat
-    chat.messages.push({
-      role: 'assistant',
-      content: response,
-      createdAt: new Date(),
-    });
-
-    // Guardar el chat actualizado en la base de datos
+    // Guardar cambios antes de procesar la respuesta
     await chat.save();
 
-    return { response };
+    // Obtener la respuesta en streaming desde el modelo
+    const stream = await this.gptService.chatWithHistory(chat.messages);
+
+    // Crear un ReadableStream para enviar la respuesta en tiempo real
+    const readable = new Readable({
+      read() {},
+    });
+
+    let assistantMessage = '';
+
+    // Procesar la respuesta en streaming
+    (async () => {
+      for await (const chunk of stream) {
+        const text = chunk.choices[0]?.delta?.content || '';
+        readable.push(text);
+        assistantMessage += text;
+        console.log(text);
+      }
+      readable.push(null); // Cerrar el stream cuando termine
+
+      // Guardar la respuesta final en la base de datos
+      chat.messages.push({
+        role: 'assistant',
+        content: assistantMessage,
+        createdAt: new Date(),
+      });
+
+      await chat.save();
+    })();
+
+    return readable;
   }
 
   // Función para generar un título basado en el contenido del primer mensaje

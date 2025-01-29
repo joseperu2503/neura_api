@@ -11,13 +11,9 @@ export const chatWithHistoryUseCase = async (
 ) => {
   const { messages } = options;
 
-  const completion = await openai.chat.completions.create({
+  return await openai.chat.completions.create({
+    stream: true,
     messages: messages,
     model: 'deepseek-chat',
   });
-
-  const response: string =
-    completion.choices[0]?.message?.content || 'No response';
-
-  return response;
 };

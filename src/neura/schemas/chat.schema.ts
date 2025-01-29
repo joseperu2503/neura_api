@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type ChatDocument = HydratedDocument<Chat>;
 
-class Message {
+export class Message {
   @Prop({ required: true })
   role: 'user' | 'assistant' | 'system';
 
