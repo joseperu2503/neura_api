@@ -53,14 +53,22 @@ export class ChatController {
   ) {
     const stream = await this.chatService.completion(user.id, completionDto);
 
+    // Configuramos la respuesta como JSON
     res.setHeader('Content-Type', 'application/json');
     res.status(HttpStatus.OK);
 
+    const decoder = new TextDecoder('utf-8'); // Para decodificar los buffers a texto
+
     for await (const chunk of stream) {
-      res.write(chunk);
+      // Convertimos el Buffer a texto
+      const text = decoder.decode(chunk, { stream: true });
+      console.log(text); // Para ver el contenido de los fragmentos
+
+      // Escribimos el fragmento de texto en la respuesta
+      res.write(text);
     }
 
-    res.end();
+    res.end(); // Finalizamos la respuesta
   }
 
   @Post('guest/completion')

@@ -84,7 +84,7 @@ export class ChatService {
         const text = chunk.choices[0]?.delta?.content || '';
         readable.push(text);
         assistantMessage += text;
-        console.log(text);
+        // console.log(text);
       }
       readable.push(null); // Cerrar el stream cuando termine
 
