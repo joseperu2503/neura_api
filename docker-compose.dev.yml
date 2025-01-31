@@ -8,7 +8,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '${SERVER_PORT}:${SERVER_PORT}'
+      - '${SERVER_PORT}:3000'
     depends_on:
       - db
     image: neura_api_${ENV}
@@ -20,7 +20,7 @@ services:
 
   db:
     container_name: ${DB_HOST}
-    image: mongo:5
+    image: mongo:4.4.6
     restart: always
     ports:
       - '${DB_EXPOSED_PORT}:${DB_PORT}'
