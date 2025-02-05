@@ -16,8 +16,7 @@ export class EncryptionInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
 
-    // Desencriptar el body si existe
-    if (request.body) {
+    if (request.method !== 'GET' && request.body) {
       try {
         request.body = this.encryptionService.decrypt(request.body);
       } catch (error) {
