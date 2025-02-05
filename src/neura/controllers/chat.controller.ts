@@ -62,7 +62,7 @@ export class ChatController {
     for await (const chunk of stream) {
       // Convertimos el Buffer a texto
       const text = decoder.decode(chunk, { stream: true });
-      console.log(text); // Para ver el contenido de los fragmentos
+      // console.log(text); // Para ver el contenido de los fragmentos
 
       // Escribimos el fragmento de texto en la respuesta
       res.write(text);
