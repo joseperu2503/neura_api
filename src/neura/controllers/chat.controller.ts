@@ -37,6 +37,10 @@ export class ChatController {
   ) {
     return this.chatService.getChat(user.id, chatId);
   }
+  @Get('/guest/:chatId')
+  async getGuestChat(@Param('chatId') chatId: string) {
+    return this.chatService.getGuestChat(chatId);
+  }
 
   @Get()
   @JwtAuth()

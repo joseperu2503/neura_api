@@ -36,6 +36,10 @@ export class ChatService {
     return this.chatModel.findOne({ userId, _id: chatId }).exec();
   }
 
+  async getGuestChat(chatId: string): Promise<Chat> {
+    return this.chatModel.findOne({ userId: null, _id: chatId }).exec();
+  }
+
   async getChats(userId: string): Promise<Chat[]> {
     return this.chatModel
       .find({ userId })
