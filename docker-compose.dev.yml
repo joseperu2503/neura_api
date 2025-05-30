@@ -14,14 +14,14 @@ services:
     image: neura_api_${ENV}
     networks:
       - neura_net
-    restart: always
+    restart: no
     env_file:
       - .env.${ENV}
 
   db:
     container_name: ${DB_HOST}
     image: mongo:4.4.6
-    restart: always
+    restart: no
     ports:
       - '${DB_EXPOSED_PORT}:${DB_PORT}'
     networks:
