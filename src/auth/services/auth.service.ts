@@ -3,12 +3,13 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
-import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
+import { Model } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 import { JwtPayload } from '../interfaces/jwt-payload.interfaces';
+import { User, UserDocument } from '../schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -60,5 +61,19 @@ export class AuthService {
   private getJwt(payload: JwtPayload) {
     const token = this.jwtService.sign(payload);
     return token;
+  }
+
+  async createGuestUser() {
+    const guestId = uuidv4();
+
+    const user = new this.userModel({
+      guestId,
+      isGuest: true,
+    });
+
+    await user.save();
+
+    const accessToken = this.getJwt({ id: user.id });
+    return { accessToken };
   }
 }

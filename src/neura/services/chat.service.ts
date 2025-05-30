@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Chat, ChatDocument, Message } from '../schemas/chat.schema';
-import { CompletionDto } from '../dto/completion.dto';
 import { GptService } from 'src/gpt/services/gpt.service';
 import { Readable } from 'stream';
+import { CompletionRequestDto } from '../dto/completion-request.dto';
+import { Chat, ChatDocument, Message } from '../schemas/chat.schema';
 
 @Injectable()
 export class ChatService {
@@ -24,22 +24,6 @@ export class ChatService {
     return newChat.save();
   }
 
-  async createGuestChat(): Promise<Chat> {
-    const newChat = new this.chatModel({
-      messages: [],
-    });
-
-    return newChat.save();
-  }
-
-  async getChat(userId: string, chatId: string): Promise<Chat> {
-    return this.chatModel.findOne({ userId, _id: chatId }).exec();
-  }
-
-  async getGuestChat(chatId: string): Promise<Chat> {
-    return this.chatModel.findOne({ userId: null, _id: chatId }).exec();
-  }
-
   async getChats(userId: string): Promise<Chat[]> {
     return this.chatModel
       .find({ userId })
@@ -48,7 +32,7 @@ export class ChatService {
       .exec();
   }
 
-  async completion(userId: string | null, completionDto: CompletionDto) {
+  async completion(userId: string, completionDto: CompletionRequestDto) {
     const { chatId, content } = completionDto;
 
     // Buscar el chat en la base de datos
@@ -106,10 +90,54 @@ export class ChatService {
   }
 
   // Función para generar un título basado en el contenido del primer mensaje
-  generateChatTitle(content: string): string {
+  private generateChatTitle(content: string): string {
     // Lógica para generar un título (puedes personalizarla)
     const maxTitleLength = 50; // Longitud máxima del título
     const title = content.slice(0, maxTitleLength).trim(); // Tomar las primeras palabras
     return title || 'Nuevo Chat'; // Si no hay contenido, usar un título por defecto
+  }
+
+  public async approveMessage(
+    chat: ChatDocument,
+    message: Message,
+  ): Promise<Chat> {
+    message.approved = true;
+    message.disapproved = false;
+    message.disapprovalReason = undefined;
+
+    return chat.save();
+  }
+
+  public async disapproveMessage(
+    chat: ChatDocument,
+    message: Message,
+    reason: string,
+  ): Promise<Chat> {
+    message.approved = false;
+    message.disapproved = true;
+    message.disapprovalReason = reason;
+
+    return chat.save();
+  }
+
+  public async findChat(
+    userId: string,
+    chatId: string,
+  ): Promise<ChatDocument | null> {
+    const chat = await this.chatModel.findOne({ userId, _id: chatId }).lean();
+    if (!chat) return null;
+
+    return chat;
+  }
+
+  public async findMessage(
+    chat: Chat,
+    messageId: string,
+  ): Promise<Message | null> {
+    const message = chat.messages.id(messageId);
+    if (!message) {
+      return null;
+    }
+    return message;
   }
 }

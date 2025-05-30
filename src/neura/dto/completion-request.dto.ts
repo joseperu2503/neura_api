@@ -1,6 +1,6 @@
-import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-export class CompletionDto {
+export class CompletionRequestDto {
   @IsString()
   @IsNotEmpty()
   chatId: string;

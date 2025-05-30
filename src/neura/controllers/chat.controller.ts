@@ -1,18 +1,21 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Param,
-  Res,
   HttpStatus,
+  NotFoundException,
+  Post,
+  Res
 } from '@nestjs/common';
-import { ChatService } from '../services/chat.service';
-import { CompletionDto } from '../dto/completion.dto';
-import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { UserDocument } from 'src/auth/schemas/user.schema';
 import { Response } from 'express';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
+import { UserDocument } from 'src/auth/schemas/user.schema';
+import { ApproveMessageRequestDto } from '../dto/approve-message-request.dto';
+import { CompletionRequestDto } from '../dto/completion-request.dto';
+import { DisapproveMessageRequestDto } from '../dto/disapprove-message-request.dto';
+import { GetChatRequestDto } from '../dto/get-chat-request.dto';
+import { ChatService } from '../services/chat.service';
 
 @Controller('chats')
 export class ChatController {
@@ -24,22 +27,17 @@ export class ChatController {
     return this.chatService.createChat(user.id);
   }
 
-  @Post('guest')
-  async createGuestChat() {
-    return this.chatService.createGuestChat();
-  }
-
-  @Get(':chatId')
+  @Post('details')
   @JwtAuth()
   async getChat(
     @GetUser() user: UserDocument,
-    @Param('chatId') chatId: string,
+    @Body() request: GetChatRequestDto,
   ) {
-    return this.chatService.getChat(user.id, chatId);
-  }
-  @Get('/guest/:chatId')
-  async getGuestChat(@Param('chatId') chatId: string) {
-    return this.chatService.getGuestChat(chatId);
+    const chat = await this.chatService.findChat(user.id, request.chatId);
+    if (!chat) {
+      throw new NotFoundException('Chat not found');
+    }
+    return chat;
   }
 
   @Get()
@@ -52,7 +50,7 @@ export class ChatController {
   @JwtAuth()
   async completion(
     @GetUser() user: UserDocument,
-    @Body() completionDto: CompletionDto,
+    @Body() completionDto: CompletionRequestDto,
     @Res() res: Response,
   ) {
     const stream = await this.chatService.completion(user.id, completionDto);
@@ -75,20 +73,45 @@ export class ChatController {
     res.end(); // Finalizamos la respuesta
   }
 
-  @Post('guest/completion')
-  async guestCompletion(
-    @Body() completionDto: CompletionDto,
-    @Res() res: Response,
+  @Post('approve')
+  @JwtAuth()
+  async aproveMessage(
+    @GetUser() user: UserDocument,
+    @Body() request: ApproveMessageRequestDto,
   ) {
-    const stream = await this.chatService.completion(null, completionDto);
+    const chat = await this.chatService.findChat(user.id, request.chatId);
 
-    res.setHeader('Content-Type', 'application/json');
-    res.status(HttpStatus.OK);
-
-    for await (const chunk of stream) {
-      res.write(chunk);
+    if (!chat) {
+      throw new NotFoundException('Chat not found');
     }
 
-    res.end();
+    const message = await this.chatService.findMessage(chat, request.messageId);
+
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
+
+    return this.chatService.approveMessage(chat, message);
+  }
+
+  @Post('disapprove')
+  @JwtAuth()
+  async disapproveMessage(
+    @GetUser() user: UserDocument,
+    @Body() request: DisapproveMessageRequestDto,
+  ) {
+    const chat = await this.chatService.findChat(user.id, request.chatId);
+
+    if (!chat) {
+      throw new NotFoundException('Chat not found');
+    }
+
+    const message = await this.chatService.findMessage(chat, request.messageId);
+
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
+
+    return this.chatService.disapproveMessage(chat, message, request.reason);
   }
 }

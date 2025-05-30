@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Chat, ChatSchema } from './schemas/chat.schema';
-import { ChatController } from './controllers/chat.controller';
-import { ChatService } from './services/chat.service';
-import { GptModule } from 'src/gpt/gpt.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { GptModule } from 'src/gpt/gpt.module';
+import { ChatController } from './controllers/chat.controller';
+import {
+  Chat,
+  ChatSchema
+} from './schemas/chat.schema';
+import { ChatService } from './services/chat.service';
 
 @Module({
   imports: [
