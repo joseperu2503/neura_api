@@ -5,7 +5,7 @@ import {
   HttpStatus,
   NotFoundException,
   Post,
-  Res
+  Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
@@ -50,10 +50,10 @@ export class ChatController {
   @JwtAuth()
   async completion(
     @GetUser() user: UserDocument,
-    @Body() completionDto: CompletionRequestDto,
+    @Body() request: CompletionRequestDto,
     @Res() res: Response,
   ) {
-    const stream = await this.chatService.completion(user.id, completionDto);
+    const stream = await this.chatService.completion(user.id, request);
 
     // Configuramos la respuesta como JSON
     res.setHeader('Content-Type', 'application/json');
