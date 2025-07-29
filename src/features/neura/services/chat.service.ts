@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { GptService } from 'src/features/gpt/services/gpt.service';
 import { Readable } from 'stream';
 import { CompletionRequestDto } from '../dto/completion-request.dto';
@@ -41,8 +41,12 @@ export class ChatService {
       throw new Error('Chat not found');
     }
 
+    const userMsgId = new Types.ObjectId().toHexString();
+    const assistantMsgId = new Types.ObjectId().toHexString();
+
     // Agregar el mensaje del usuario al chat
     chat.messages.push({
+      _id: userMsgId,
       role: 'user',
       content,
       createdAt: new Date(),
@@ -56,13 +60,20 @@ export class ChatService {
     // Guardar cambios antes de procesar la respuesta
     await chat.save();
 
-    // Obtener la respuesta en streaming desde el modelo
-    const stream = await this.gptService.chatWithHistory(chat.messages);
-
     // Crear un ReadableStream para enviar la respuesta en tiempo real
     const readable = new Readable({
       read() {},
     });
+
+    readable.push(
+      `data:${JSON.stringify({
+        messageId: assistantMsgId,
+        conversationId: chat.id,
+      })}`,
+    );
+
+    // Obtener la respuesta en streaming desde el modelo
+    const stream = await this.gptService.chatWithHistory(chat.messages);
 
     let assistantMessage = '';
 
@@ -74,10 +85,12 @@ export class ChatService {
         assistantMessage += text;
         // console.log(text);
       }
+
       readable.push(null); // Cerrar el stream cuando termine
 
       // Guardar la respuesta final en la base de datos
       chat.messages.push({
+        _id: assistantMsgId,
         role: 'assistant',
         content: assistantMessage,
         createdAt: new Date(),
