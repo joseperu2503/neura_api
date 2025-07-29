@@ -8,9 +8,9 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
-import { UserDocument } from 'src/auth/schemas/user.schema';
+import { GetUser } from 'src/features/auth/decorators/get-user.decorator';
+import { JwtAuth } from 'src/features/auth/decorators/jwt-auth.decorator';
+import { UserDocument } from 'src/features/auth/schemas/user.schema';
 import { ApproveMessageRequestDto } from '../dto/approve-message-request.dto';
 import { CompletionRequestDto } from '../dto/completion-request.dto';
 import { DisapproveMessageRequestDto } from '../dto/disapprove-message-request.dto';
@@ -21,7 +21,7 @@ import { ChatService } from '../services/chat.service';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  @Post()
+  @Get('create')
   @JwtAuth()
   async createChat(@GetUser() user: UserDocument) {
     return this.chatService.createChat(user.id);
