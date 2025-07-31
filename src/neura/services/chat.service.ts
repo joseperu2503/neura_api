@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { GptService } from 'src/features/gpt/services/gpt.service';
+import { UserDocument } from 'src/auth/schemas/user.schema';
+import { GptService } from 'src/gpt/services/gpt.service';
 import { Readable } from 'stream';
 import { CompletionRequestDto } from '../dto/completion-request.dto';
+import { MessageFeedbackRequestDto } from '../dto/message-feedback-request.dto';
 import { Chat, ChatDocument, Message } from '../schemas/chat.schema';
 
 @Injectable()
@@ -68,7 +70,7 @@ export class ChatService {
     readable.push(
       `data:${JSON.stringify({
         messageId: assistantMsgId,
-        conversationId: chat.id,
+        chatId: chat.id,
       })}`,
     );
 
@@ -86,6 +88,8 @@ export class ChatService {
         // console.log(text);
       }
 
+      readable.push('[DONE]');
+
       readable.push(null); // Cerrar el stream cuando termine
 
       // Guardar la respuesta final en la base de datos
@@ -94,6 +98,8 @@ export class ChatService {
         role: 'assistant',
         content: assistantMessage,
         createdAt: new Date(),
+        feedbackType: null,
+        feedbackDescription: '',
       });
 
       await chat.save();
@@ -110,25 +116,26 @@ export class ChatService {
     return title || 'Nuevo Chat'; // Si no hay contenido, usar un título por defecto
   }
 
-  public async approveMessage(
-    chat: ChatDocument,
-    message: Message,
+  public async feedbackMessage(
+    request: MessageFeedbackRequestDto,
+    user: UserDocument,
   ): Promise<Chat> {
-    message.approved = true;
-    message.disapproved = false;
-    message.disapprovalReason = undefined;
+    const chat = await this.chatModel
+      .findOne({ userId: user.id, _id: request.chatId })
+      .exec();
 
-    return chat.save();
-  }
+    if (!chat) {
+      throw new NotFoundException('Chat not found');
+    }
 
-  public async disapproveMessage(
-    chat: ChatDocument,
-    message: Message,
-    reason: string,
-  ): Promise<Chat> {
-    message.approved = false;
-    message.disapproved = true;
-    message.disapprovalReason = reason;
+    const message = chat.messages.id(request.messageId);
+
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
+
+    message.feedbackType = request.feedbackType;
+    message.feedbackDescription = request.feedbackDescription;
 
     return chat.save();
   }
@@ -137,7 +144,7 @@ export class ChatService {
     userId: string,
     chatId: string,
   ): Promise<ChatDocument | null> {
-    const chat = await this.chatModel.findOne({ userId, _id: chatId }).lean();
+    const chat = await this.chatModel.findOne({ userId, _id: chatId }).exec();
     if (!chat) return null;
 
     return chat;

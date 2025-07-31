@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './features/auth/auth.module';
-import { GptModule } from './features/gpt/gpt.module';
-import { NeuraModule } from './features/neura/neura.module';
-import { EncryptionModule } from './infrastructure/encryption/encryption.module';
+import { AuthModule } from './auth/auth.module';
+import { EncryptionModule } from './encryption/encryption.module';
+import { GptModule } from './gpt/gpt.module';
+import { NeuraModule } from './neura/neura.module';
 @Module({
   imports: [
     GptModule,

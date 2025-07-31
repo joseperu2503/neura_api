@@ -13,14 +13,11 @@ export class Message {
   @Prop({ default: Date.now })
   createdAt: Date;
 
-  @Prop({ default: false })
-  approved?: boolean;
-
-  @Prop({ default: false })
-  disapproved?: boolean;
-
   @Prop()
-  disapprovalReason?: string;
+  feedbackDescription?: string;
+
+  @Prop({ enum: ['GOOD', 'BAD'] })
+  feedbackType?: 'GOOD' | 'BAD' | null;
 }
 
 const MessageSchema = SchemaFactory.createForClass(Message);

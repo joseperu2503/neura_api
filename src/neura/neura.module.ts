@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from 'src/features/auth/auth.module';
+import { AuthModule } from 'src/auth/auth.module';
 import { GptModule } from '../gpt/gpt.module';
 import { ChatController } from './controllers/chat.controller';
 import { Chat, ChatSchema } from './schemas/chat.schema';
