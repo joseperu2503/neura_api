@@ -1,10 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { EncryptionModule } from './encryption/encryption.module';
+import { EncryptionInterceptor } from './encryption/interceptors/encryption.interceptor';
 import { GptModule } from './gpt/gpt.module';
 import { NeuraModule } from './neura/neura.module';
+
+const enableEncryption = process.env.ENCRYPT === 'true';
+
 @Module({
   imports: [
     GptModule,
@@ -21,11 +26,15 @@ import { NeuraModule } from './neura/neura.module';
     EncryptionModule,
   ],
   controllers: [],
-  // providers: [
-  //   {
-  //     provide: APP_INTERCEPTOR,
-  //     useClass: EncryptionInterceptor,
-  //   },
-  // ],
+  providers: [
+    ...(enableEncryption
+      ? [
+          {
+            provide: APP_INTERCEPTOR,
+            useClass: EncryptionInterceptor,
+          },
+        ]
+      : []),
+  ],
 })
 export class AppModule {}
