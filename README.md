@@ -31,4 +31,6 @@ docker compose -f docker-compose.dev.yml --env-file .env.dev -p neura_api_dev up
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file .env.prod -p neura_api_prod up -d --build
+
+docker compose -f docker-compose.prod.yml --env-file .env.app -p neura_api_app up -d --build
 ```
