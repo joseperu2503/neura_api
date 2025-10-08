@@ -2,9 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { EncryptionModule } from './encryption/encryption.module';
 import { EncryptionInterceptor } from './encryption/interceptors/encryption.interceptor';
+import { GeminiModule } from './gemini/gemini.module';
 import { GptModule } from './gpt/gpt.module';
 import { NeuraModule } from './neura/neura.module';
 
@@ -19,11 +22,17 @@ const enableEncryption = process.env.ENCRYPT === 'true';
       `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`,
     ),
 
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+
     NeuraModule,
 
     AuthModule,
 
     EncryptionModule,
+
+    GeminiModule,
   ],
   controllers: [],
   providers: [

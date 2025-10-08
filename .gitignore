@@ -62,3 +62,5 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /mongo
 .env.*
 !.env.example
+
+/public/ai-images/*.png

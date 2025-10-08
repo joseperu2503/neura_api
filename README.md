@@ -1,33 +1,32 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+<img src="assets/icons/icon.png" width="150"  alt="logo">
 </p>
 
+# Neura API
 
-# Ejecutar en desarrollo
+## Installation
 
-1. Clonar el repositorio
-2. Ejecutar
-```
-npm install
-```
+### Environments
 
-3. tener Nest CLI instalado
-```
-npm i -g @nestjs/cli
+```bash
+cp .env.example .env.dev
+cp .env.example .env.prod
+cp .env.example .env.staging
 ```
 
-2. Levantar la base de datos
-```
-docker compose up -d 
+```bash
+nano .env.dev
+nano .env.prod
+nano .env.staging
 ```
 
-## Desarrollo
+## Start all services in development mode with Docker:
 
 ```bash
 docker compose -f docker-compose.dev.yml --env-file .env.dev -p neura_api_dev up --build
 ```
 
-## Produccion
+## Run the API in detached, production-ready mode:
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file .env.prod -p neura_api_prod up -d --build
