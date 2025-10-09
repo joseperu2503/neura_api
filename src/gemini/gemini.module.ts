@@ -5,5 +5,6 @@ import { GeminiService } from './services/gemini.service';
 @Module({
   controllers: [GeminiController],
   providers: [GeminiService],
+  exports: [GeminiService],
 })
 export class GeminiModule {}

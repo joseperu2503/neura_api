@@ -1,7 +1,6 @@
 import { Content, GoogleGenAI } from '@google/genai';
 import { Injectable } from '@nestjs/common';
 import { BasicPromptDto } from '../dto/basic-prompt.dto';
-import { ChatPromptDto } from '../dto/chat-prompt.dto';
 import { ImageGenerationDto } from '../dto/image-generation.dto';
 import { PokemonHelperDto } from '../dto/pokemon-helper.dto';
 import { TriviaQuestionDto } from '../dto/trivia-question.dto';
@@ -22,15 +21,45 @@ export class GeminiService {
     return basicPromptUseCase(this.ai, basicPromptDto);
   }
 
-  async basicPromptStream(basicPromptDto: BasicPromptDto) {
-    return basicPromptStreamUseCase(this.ai, basicPromptDto);
+  async *basicPromptStream(
+    basicPromptDto: BasicPromptDto,
+  ): AsyncGenerator<string> {
+    const stream = await basicPromptStreamUseCase(this.ai, basicPromptDto);
+
+    for await (const chunk of stream) {
+      yield chunk.text;
+    }
   }
 
-  async chatStream(chatPromptDto: ChatPromptDto) {
-    const chatHistory = this.getChatHistory(chatPromptDto.chatId);
-    return chatPromptStreamUseCase(this.ai, chatPromptDto, {
-      history: chatHistory,
+  async *chatStream(options: {
+    prompt: string;
+    history: MessageParam[];
+    files: Express.Multer.File[];
+  }) {
+    const { prompt, files, history } = options;
+
+    const historyGemini = history.map((message) => {
+      const role = message.role === 'user' ? 'user' : 'model';
+      return {
+        role: role,
+        parts: [
+          {
+            text: message.content,
+          },
+        ],
+      };
     });
+
+    const stream = await chatPromptStreamUseCase(
+      this.ai,
+      prompt,
+      files,
+      historyGemini,
+    );
+
+    for await (const chunk of stream) {
+      yield chunk.text;
+    }
   }
 
   saveMessage(chatId: string, message: Content) {

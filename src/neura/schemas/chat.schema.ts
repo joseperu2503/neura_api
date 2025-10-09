@@ -10,6 +10,7 @@ export class Message {
 
   @Prop({ required: true })
   content: string;
+
   @Prop({ default: Date.now })
   createdAt: Date;
 

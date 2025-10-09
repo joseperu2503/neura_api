@@ -56,17 +56,25 @@ export class GptService {
   }
 
   async *chatWithHistory(
-    messages: ChatCompletionMessageParam[],
+    history: MessageParam[],
+    prompt: string,
   ): AsyncGenerator<string> {
-    const stream = await chatWithHistoryUseCase(this.openai, {
-      messages,
-    });
+    const messages: ChatCompletionMessageParam[] = [
+      ...history.map((message) => ({
+        role: message.role,
+        content: message.content,
+      })),
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ];
+
+    const stream = await chatWithHistoryUseCase(this.openai, messages);
 
     for await (const chunk of stream) {
       const text = chunk.choices[0]?.delta?.content || '';
-      if (text) {
-        yield text; // emitir cada chunk de texto
-      }
+      yield text; // emitir cada chunk de texto
     }
   }
 }

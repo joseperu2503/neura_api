@@ -2,8 +2,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsOptional,
-  IsString,
-  IsUUID,
+  IsString
 } from 'class-validator';
 
 export class ChatPromptDto {
@@ -15,6 +14,7 @@ export class ChatPromptDto {
   @IsOptional()
   files: Express.Multer.File[];
 
-  @IsUUID()
+  // @IsUUID()
+  @IsString()
   chatId: string;
 }

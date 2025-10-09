@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { UserDocument } from 'src/auth/schemas/user.schema';
+import { GeminiService } from 'src/gemini/services/gemini.service';
 import { GptService } from 'src/gpt/services/gpt.service';
 import { CompletionRequestDto } from '../dto/completion-request.dto';
 import { MessageFeedbackRequestDto } from '../dto/message-feedback-request.dto';
@@ -14,7 +15,11 @@ export class ChatService {
     private chatModel: Model<ChatDocument>,
 
     private gptService: GptService,
+
+    private geminiService: GeminiService,
   ) {}
+
+  completionModel: 'gpt' | 'gemini' = 'gpt';
 
   async createChat(userId: string): Promise<Chat> {
     const newChat = new this.chatModel({
@@ -48,6 +53,11 @@ export class ChatService {
     const userMsgId = new Types.ObjectId().toHexString();
     const assistantMsgId = new Types.ObjectId().toHexString();
 
+    const history: MessageParam[] = chat.messages.map((message) => ({
+      role: message.role,
+      content: message.content,
+    }));
+
     // Agregar el mensaje del usuario al chat
     chat.messages.push({
       _id: userMsgId,
@@ -70,8 +80,18 @@ export class ChatService {
       chatId: chat.id,
     })}`;
 
+    let stream: AsyncGenerator<string>;
+
     // Obtener la respuesta en streaming desde el modelo
-    const stream = this.gptService.chatWithHistory(chat.messages);
+    if (this.completionModel === 'gemini') {
+      stream = this.geminiService.chatStream({
+        prompt: completionDto.content,
+        history: history,
+        files: [],
+      });
+    } else {
+      stream = this.gptService.chatWithHistory(history, completionDto.content);
+    }
 
     let assistantMessage = '';
 

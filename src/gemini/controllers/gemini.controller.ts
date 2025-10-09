@@ -1,4 +1,3 @@
-import { GenerateContentResponse } from '@google/genai';
 import {
   Body,
   Controller,
@@ -24,17 +23,14 @@ import { GeminiService } from '../services/gemini.service';
 export class GeminiController {
   constructor(private readonly geminiService: GeminiService) {}
 
-  async outputStreamResponse(
-    res: Response,
-    stream: AsyncGenerator<GenerateContentResponse, any, any>,
-  ) {
+  async outputStreamResponse(res: Response, stream: AsyncGenerator<String>) {
     // res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Type', 'text/plain');
     res.status(HttpStatus.OK);
 
     let resultText = '';
     for await (const chunk of stream) {
-      const piece = chunk.text;
+      const piece = chunk;
       resultText += piece;
       res.write(piece);
     }
@@ -68,9 +64,20 @@ export class GeminiController {
     @Res() res: Response,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    chatPromptDto.files = files;
-
-    const stream = await this.geminiService.chatStream(chatPromptDto);
+    const { prompt } = chatPromptDto;
+    const history: MessageParam[] = this.geminiService
+      .getChatHistory(chatPromptDto.chatId)
+      .map(
+        (message): MessageParam => ({
+          role: message.role == 'user' ? 'user' : 'assistant',
+          content: message.parts?.[0]?.text ?? '',
+        }),
+      );
+    const stream = this.geminiService.chatStream({
+      prompt,
+      history,
+      files,
+    });
     const data = await this.outputStreamResponse(res, stream);
 
     const geminiMessage = {
