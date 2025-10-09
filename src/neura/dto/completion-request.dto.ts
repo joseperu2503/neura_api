@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class CompletionRequestDto {
   @IsString()
@@ -8,5 +14,9 @@ export class CompletionRequestDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(500)
-  content: string;
+  prompt: string;
+
+  @IsArray()
+  @IsOptional()
+  files?: Express.Multer.File[];
 }

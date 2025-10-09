@@ -6,7 +6,10 @@ import {
   NotFoundException,
   Post,
   Res,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
@@ -47,12 +50,16 @@ export class ChatController {
 
   @Post('completion')
   @JwtAuth()
+  @UseInterceptors(FilesInterceptor('files'))
   async completion(
     @GetUser() user: UserDocument,
     @Body() request: CompletionRequestDto,
     @Res() res: Response,
+    @UploadedFiles() files?: Array<Express.Multer.File>,
   ) {
-    const stream = this.chatService.completion(user.id, request);
+    const { chatId, prompt } = request;
+
+    const stream = this.chatService.completion(user.id, chatId, prompt, files);
 
     // Configuramos la respuesta como JSON
     res.setHeader('Content-Type', 'application/json');

@@ -18,6 +18,8 @@ export const chatPromptStreamUseCase = async (
   const { model = 'gemini-2.0-flash', systemInstruction = `` }: Options =
     options ?? {};
 
+  console.log(uploadedFiles);
+
   const chat = ai.chats.create({
     model: model,
     config: {

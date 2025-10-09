@@ -27,16 +27,16 @@ export class GeminiService {
     const stream = await basicPromptStreamUseCase(this.ai, basicPromptDto);
 
     for await (const chunk of stream) {
-      yield chunk.text;
+      yield chunk.text || '';
     }
   }
 
   async *chatStream(options: {
     prompt: string;
     history: MessageParam[];
-    files: Express.Multer.File[];
-  }) {
-    const { prompt, files, history } = options;
+    files?: Express.Multer.File[];
+  }): AsyncGenerator<string> {
+    const { prompt, files = [], history } = options;
 
     const historyGemini = history.map((message) => {
       const role = message.role === 'user' ? 'user' : 'model';
@@ -58,7 +58,7 @@ export class GeminiService {
     );
 
     for await (const chunk of stream) {
-      yield chunk.text;
+      yield chunk.text || '';
     }
   }
 

@@ -4,7 +4,6 @@ import { Model, Types } from 'mongoose';
 import { UserDocument } from 'src/auth/schemas/user.schema';
 import { GeminiService } from 'src/gemini/services/gemini.service';
 import { GptService } from 'src/gpt/services/gpt.service';
-import { CompletionRequestDto } from '../dto/completion-request.dto';
 import { MessageFeedbackRequestDto } from '../dto/message-feedback-request.dto';
 import { Chat, ChatDocument, Message } from '../schemas/chat.schema';
 
@@ -19,7 +18,7 @@ export class ChatService {
     private geminiService: GeminiService,
   ) {}
 
-  completionModel: 'gpt' | 'gemini' = 'gpt';
+  completionModel: 'gpt' | 'gemini' = 'gemini';
 
   async createChat(userId: string): Promise<Chat> {
     const newChat = new this.chatModel({
@@ -40,10 +39,10 @@ export class ChatService {
 
   async *completion(
     userId: string,
-    completionDto: CompletionRequestDto,
+    chatId: string,
+    prompt: string,
+    files?: Express.Multer.File[],
   ): AsyncGenerator<string> {
-    const { chatId, content } = completionDto;
-
     // Buscar el chat en la base de datos
     const chat = await this.chatModel.findOne({ userId, _id: chatId }).exec();
     if (!chat) {
@@ -62,13 +61,13 @@ export class ChatService {
     chat.messages.push({
       _id: userMsgId,
       role: 'user',
-      content,
+      content: prompt,
       createdAt: new Date(),
     });
 
     // Si es el primer mensaje del usuario, establecer un título
     if (chat.messages.length === 1) {
-      chat.title = this.generateChatTitle(content);
+      chat.title = this.generateChatTitle(prompt);
     }
 
     // Guardar cambios antes de procesar la respuesta
@@ -85,12 +84,12 @@ export class ChatService {
     // Obtener la respuesta en streaming desde el modelo
     if (this.completionModel === 'gemini') {
       stream = this.geminiService.chatStream({
-        prompt: completionDto.content,
+        prompt: prompt,
         history: history,
-        files: [],
+        files: files,
       });
     } else {
-      stream = this.gptService.chatWithHistory(history, completionDto.content);
+      stream = this.gptService.chatWithHistory(history, prompt);
     }
 
     let assistantMessage = '';
