@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { UserDocument } from 'src/auth/schemas/user.schema';
 import { GptService } from 'src/gpt/services/gpt.service';
-import { Readable } from 'stream';
 import { CompletionRequestDto } from '../dto/completion-request.dto';
 import { MessageFeedbackRequestDto } from '../dto/message-feedback-request.dto';
 import { Chat, ChatDocument, Message } from '../schemas/chat.schema';
@@ -34,7 +33,10 @@ export class ChatService {
       .exec();
   }
 
-  async completion(userId: string, completionDto: CompletionRequestDto) {
+  async *completion(
+    userId: string,
+    completionDto: CompletionRequestDto,
+  ): AsyncGenerator<string> {
     const { chatId, content } = completionDto;
 
     // Buscar el chat en la base de datos
@@ -62,50 +64,37 @@ export class ChatService {
     // Guardar cambios antes de procesar la respuesta
     await chat.save();
 
-    // Crear un ReadableStream para enviar la respuesta en tiempo real
-    const readable = new Readable({
-      read() {},
-    });
-
-    readable.push(
-      `data:${JSON.stringify({
-        messageId: assistantMsgId,
-        chatId: chat.id,
-      })}`,
-    );
+    // Emitir el mensaje inicial con los IDs
+    yield `data:${JSON.stringify({
+      messageId: assistantMsgId,
+      chatId: chat.id,
+    })}`;
 
     // Obtener la respuesta en streaming desde el modelo
-    const stream = await this.gptService.chatWithHistory(chat.messages);
+    const stream = this.gptService.chatWithHistory(chat.messages);
 
     let assistantMessage = '';
 
     // Procesar la respuesta en streaming
-    (async () => {
-      for await (const chunk of stream) {
-        const text = chunk.choices[0]?.delta?.content || '';
-        readable.push(text);
-        assistantMessage += text;
-        // console.log(text);
-      }
+    for await (const chunk of stream) {
+      yield chunk; // emitir chunk al cliente
+      assistantMessage += chunk;
+    }
 
-      readable.push('[DONE]');
+    // Emitir final de transmisión
+    yield '[DONE]';
 
-      readable.push(null); // Cerrar el stream cuando termine
+    // Guardar la respuesta final en la base de datos
+    chat.messages.push({
+      _id: assistantMsgId,
+      role: 'assistant',
+      content: assistantMessage,
+      createdAt: new Date(),
+      feedbackType: null,
+      feedbackDescription: '',
+    });
 
-      // Guardar la respuesta final en la base de datos
-      chat.messages.push({
-        _id: assistantMsgId,
-        role: 'assistant',
-        content: assistantMessage,
-        createdAt: new Date(),
-        feedbackType: null,
-        feedbackDescription: '',
-      });
-
-      await chat.save();
-    })();
-
-    return readable;
+    await chat.save();
   }
 
   // Función para generar un título basado en el contenido del primer mensaje

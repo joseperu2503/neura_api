@@ -1,4 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import OpenAI from 'openai';
+import { ChatCompletionMessageParam } from 'openai/resources';
+import {
+  OrthographyDto,
+  ProsConsDiscusserDto,
+  TextToAudioDto,
+  TranslateDto,
+} from '../dto';
 import {
   chatWithHistoryUseCase,
   orthographyCheckUseCase,
@@ -7,14 +15,6 @@ import {
   textToAudioUseCase,
   translateUseCase,
 } from '../uses-cases';
-import {
-  OrthographyDto,
-  ProsConsDiscusserDto,
-  TextToAudioDto,
-  TranslateDto,
-} from '../dto';
-import OpenAI from 'openai';
-import { ChatCompletionMessageParam } from 'openai/resources';
 
 @Injectable()
 export class GptService {
@@ -55,9 +55,18 @@ export class GptService {
     });
   }
 
-  async chatWithHistory(messages: ChatCompletionMessageParam[]) {
-    return await chatWithHistoryUseCase(this.openai, {
-      messages: messages,
+  async *chatWithHistory(
+    messages: ChatCompletionMessageParam[],
+  ): AsyncGenerator<string> {
+    const stream = await chatWithHistoryUseCase(this.openai, {
+      messages,
     });
+
+    for await (const chunk of stream) {
+      const text = chunk.choices[0]?.delta?.content || '';
+      if (text) {
+        yield text; // emitir cada chunk de texto
+      }
+    }
   }
 }

@@ -21,7 +21,7 @@ export const basicPromptStreamUseCase = async (
   const images = await geminiUploadFiles(ai, files);
 
   const {
-    model = 'gemini-2.0-flash',
+    model = 'gemini-2.0-flash-exp-image-generation',
     systemInstruction = `
      
   `,
