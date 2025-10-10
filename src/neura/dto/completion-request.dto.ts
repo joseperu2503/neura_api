@@ -1,5 +1,7 @@
+import { Transform } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -19,4 +21,9 @@ export class CompletionRequestDto {
   @IsArray()
   @IsOptional()
   files?: Express.Multer.File[];
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true' || value === true)
+  imageGeneration?: boolean;
 }

@@ -1,11 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { UserDocument } from 'src/auth/schemas/user.schema';
 import { GeminiService } from 'src/gemini/services/gemini.service';
 import { GptService } from 'src/gpt/services/gpt.service';
+import { v4 as uuidV4 } from 'uuid';
 import { MessageFeedbackRequestDto } from '../dto/message-feedback-request.dto';
-import { Chat, ChatDocument, Message } from '../schemas/chat.schema';
+import {
+  AssistantFile,
+  Chat,
+  ChatDocument,
+  Message,
+} from '../schemas/chat.schema';
+
+const AI_IMAGES_PATH = path.join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'public/ai-images',
+);
 
 @Injectable()
 export class ChatService {
@@ -41,6 +57,7 @@ export class ChatService {
     userId: string,
     chatId: string,
     prompt: string,
+    imageGeneration: boolean,
     files?: Express.Multer.File[],
   ): AsyncGenerator<string> {
     // Buscar el chat en la base de datos
@@ -79,25 +96,57 @@ export class ChatService {
       chatId: chat.id,
     })}`;
 
-    let stream: AsyncGenerator<string>;
-
-    // Obtener la respuesta en streaming desde el modelo
-    if (this.completionModel === 'gemini') {
-      stream = this.geminiService.chatStream({
-        prompt: prompt,
-        history: history,
-        files: files,
-      });
-    } else {
-      stream = this.gptService.chatWithHistory(history, prompt);
-    }
-
     let assistantMessage = '';
+    let assistantFile: AssistantFile | null = null;
 
-    // Procesar la respuesta en streaming
-    for await (const chunk of stream) {
-      yield chunk; // emitir chunk al cliente
-      assistantMessage += chunk;
+    if (!imageGeneration) {
+      let stream: AsyncGenerator<string>;
+
+      // Obtener la respuesta en streaming desde el modelo
+      if (this.completionModel === 'gemini') {
+        stream = this.geminiService.chatStream({
+          prompt: prompt,
+          history: history,
+          files: files,
+        });
+      } else {
+        stream = this.gptService.chatWithHistory(history, prompt);
+      }
+
+      // Procesar la respuesta en streaming
+      for await (const chunk of stream) {
+        yield chunk; // emitir chunk al cliente
+        assistantMessage += chunk;
+      }
+    } else {
+      const stream = this.geminiService.imageGenerationStream({
+        prompt,
+        files,
+      });
+
+      let imageUrl = '';
+      const imageId = uuidV4();
+
+      for await (const chunk of stream) {
+        if (typeof chunk === 'string') {
+          yield chunk;
+          assistantMessage += chunk;
+        } else {
+          const imageName = `${imageId}.png`;
+          const imageSize = chunk.length;
+          const imagePath = path.join(AI_IMAGES_PATH, imageName);
+          fs.writeFileSync(imagePath, chunk);
+          imageUrl = `http://localhost:3000/ai-images/${imageName}`;
+
+          assistantFile = {
+            name: imageName,
+            size: imageSize,
+            url: imageUrl,
+          };
+
+          yield `image_data:${JSON.stringify(assistantFile)}`;
+        }
+      }
     }
 
     // Emitir final de transmisión
@@ -111,6 +160,7 @@ export class ChatService {
       createdAt: new Date(),
       feedbackType: null,
       feedbackDescription: '',
+      assistantFile: assistantFile,
     });
 
     await chat.save();

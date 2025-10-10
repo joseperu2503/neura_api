@@ -57,12 +57,17 @@ export class ChatController {
     @Res() res: Response,
     @UploadedFiles() files?: Array<Express.Multer.File>,
   ) {
-    const { chatId, prompt } = request;
+    const { chatId, prompt, imageGeneration = false } = request;
 
-    const stream = this.chatService.completion(user.id, chatId, prompt, files);
+    const stream = this.chatService.completion(
+      user.id,
+      chatId,
+      prompt,
+      imageGeneration,
+      files,
+    );
 
-    // Configuramos la respuesta como JSON
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Type', 'text/plain');
     res.status(HttpStatus.OK);
 
     for await (const text of stream) {

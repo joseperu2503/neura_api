@@ -118,6 +118,21 @@ export class GeminiController {
     };
   }
 
+  @Post('image-generation-stream')
+  @UseInterceptors(FilesInterceptor('files'))
+  async imageGenerationStream(
+    @Body() imageGenerationDto: ImageGenerationDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Res() res: Response,
+  ) {
+    const { prompt } = imageGenerationDto;
+
+    const stream = this.geminiService.imageGenerationStream({
+      prompt,
+      files,
+    });
+  }
+
   @Post('pokemon-helper')
   getPokemonHelp(@Body() pokemonHelperDto: PokemonHelperDto) {
     return this.geminiService.getPokemonHelp(pokemonHelperDto);

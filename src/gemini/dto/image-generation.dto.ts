@@ -7,5 +7,5 @@ export class ImageGenerationDto {
 
   @IsArray()
   @IsOptional()
-  files: Express.Multer.File[];
+  files?: Express.Multer.File[];
 }

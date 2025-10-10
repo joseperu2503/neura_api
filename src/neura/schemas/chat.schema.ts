@@ -3,6 +3,20 @@ import { HydratedDocument, Types } from 'mongoose';
 
 export type ChatDocument = HydratedDocument<Chat>;
 
+@Schema({ _id: true })
+export class AssistantFile {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  size: number;
+
+  @Prop({ required: true })
+  url: string;
+}
+
+const AssistantFileSchema = SchemaFactory.createForClass(AssistantFile);
+
 @Schema({ _id: true }) // Esto asegura que cada mensaje tenga su _id
 export class Message {
   @Prop({ required: true })
@@ -19,6 +33,9 @@ export class Message {
 
   @Prop({ enum: ['GOOD', 'BAD'] })
   feedbackType?: 'GOOD' | 'BAD' | null;
+
+  @Prop({ type: AssistantFileSchema, required: false })
+  assistantFile?: AssistantFile;
 }
 
 const MessageSchema = SchemaFactory.createForClass(Message);
