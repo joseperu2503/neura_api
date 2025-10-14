@@ -4,7 +4,7 @@ import { AesEncryptionStrategy } from '../strategies/aes-encryption.strategy';
 
 @Injectable()
 export class EncryptionService {
-  private readonly encryptionKey: string = process.env.ENCRYPTION_KEY;
+  private readonly encryptionKey: string = process.env.ENCRYPTION_KEY || '';
   private strategy: EncryptionStrategy;
 
   constructor() {

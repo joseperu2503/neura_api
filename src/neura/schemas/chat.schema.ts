@@ -31,7 +31,7 @@ export class Message {
   @Prop()
   feedbackDescription?: string;
 
-  @Prop({ enum: ['GOOD', 'BAD'] })
+  @Prop({ type: String, enum: ['GOOD', 'BAD'], default: null })
   feedbackType?: 'GOOD' | 'BAD' | null;
 
   @Prop({ type: AssistantFileSchema, required: false })
@@ -42,8 +42,8 @@ const MessageSchema = SchemaFactory.createForClass(Message);
 
 @Schema({ timestamps: true })
 export class Chat {
-  @Prop({ default: null })
-  userId: string | null;
+  @Prop({ type: String, default: null })
+  userId?: string | null;
 
   @Prop({ type: [MessageSchema], default: [] })
   messages: Types.DocumentArray<Message>;

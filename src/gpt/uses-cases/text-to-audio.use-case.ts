@@ -1,6 +1,6 @@
+import * as fs from 'fs';
 import OpenAI from 'openai';
 import * as path from 'path';
-import * as fs from 'fs';
 
 interface Options {
   prompt: string;
@@ -8,7 +8,7 @@ interface Options {
 }
 
 export const textToAudioUseCase = async (openai: OpenAI, options: Options) => {
-  const { prompt, voice } = options;
+  const { prompt, voice = 'nova' } = options;
 
   const voices = {
     nova: 'nova',

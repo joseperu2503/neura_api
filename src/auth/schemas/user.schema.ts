@@ -5,19 +5,19 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User {
-  @Prop({ unique: true, sparse: true })
+  @Prop({ type: String, unique: true, sparse: true })
   email?: string;
 
-  @Prop({ select: false })
+  @Prop({ type: String, select: false })
   password?: string;
 
-  @Prop({ required: true, default: Date.now })
+  @Prop({ type: Date, required: true, default: Date.now })
   createdAt: Date;
 
-  @Prop({ default: false })
+  @Prop({ type: Boolean, default: false })
   isGuest: boolean;
 
-  @Prop({ unique: true, sparse: true })
+  @Prop({ type: String, unique: true, sparse: true })
   guestId?: string;
 }
 
