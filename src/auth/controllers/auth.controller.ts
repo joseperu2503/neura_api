@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Auth } from '../decorators/auth.decorator';
 import { GetUser } from '../decorators/get-user.decorator';
-import { JwtAuth } from '../decorators/jwt-auth.decorator';
 import { LoginDto } from '../dto/login.dto';
 import { RegisterDto } from '../dto/register.dto';
 import { User } from '../schemas/user.schema';
@@ -22,7 +22,7 @@ export class AuthController {
     return this.authService.login(email, password);
   }
 
-  @JwtAuth()
+  @Auth()
   @Get('profile')
   async getProfile(@GetUser() user: User) {
     return this.authService.getProfile(user);

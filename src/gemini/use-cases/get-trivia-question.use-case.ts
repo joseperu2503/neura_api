@@ -1,5 +1,4 @@
 import { GoogleGenAI } from '@google/genai';
-import { TriviaQuestionDto } from '../dto/trivia-question.dto';
 
 export interface TriviaAnswer {
   question: string;
@@ -9,10 +8,8 @@ export interface TriviaAnswer {
 
 export const getTriviaQuestionUseCase = async (
   ai: GoogleGenAI,
-  triviaQuestionDto: TriviaQuestionDto,
+  topic: string,
 ) => {
-  const { topic } = triviaQuestionDto;
-
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash',
     contents: `Dame una pregunta de conocimiento general sobre el tema: ${topic}`,
@@ -38,7 +35,6 @@ export const getTriviaQuestionUseCase = async (
     },
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const jsonResponse = JSON.parse(response.text ?? '{}');
   return jsonResponse as TriviaAnswer;
 };

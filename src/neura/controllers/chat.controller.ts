@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
 import { UserDocument } from 'src/auth/schemas/user.schema';
 import { CompletionRequestDto } from '../dto/completion-request.dto';
 import { GetChatRequestDto } from '../dto/get-chat-request.dto';
@@ -24,13 +24,13 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('create')
-  @JwtAuth()
+  @Auth()
   async createChat(@GetUser() user: UserDocument) {
     return this.chatService.createChat(user.id);
   }
 
   @Post('details')
-  @JwtAuth()
+  @Auth()
   async getChat(
     @GetUser() user: UserDocument,
     @Body() request: GetChatRequestDto,
@@ -43,13 +43,13 @@ export class ChatController {
   }
 
   @Get()
-  @JwtAuth()
+  @Auth()
   async getChats(@GetUser() user: UserDocument) {
     return this.chatService.getChats(user.id);
   }
 
   @Post('completion')
-  @JwtAuth()
+  @Auth()
   @UseInterceptors(FilesInterceptor('files'))
   async completion(
     @GetUser() user: UserDocument,
@@ -71,7 +71,7 @@ export class ChatController {
     res.status(HttpStatus.OK);
 
     for await (const text of stream) {
-      // Escribimos el fragmento de texto en la respuesta
+      // Enviamos el texto al cliente
       res.write(text);
     }
 
@@ -79,7 +79,7 @@ export class ChatController {
   }
 
   @Post('message-feedback')
-  @JwtAuth()
+  @Auth()
   async aproveMessage(
     @GetUser() user: UserDocument,
     @Body() request: MessageFeedbackRequestDto,

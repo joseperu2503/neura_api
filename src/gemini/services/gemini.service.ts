@@ -6,6 +6,7 @@ import { TriviaQuestionDto } from '../dto/trivia-question.dto';
 import { basicPromptStreamUseCase } from '../use-cases/basic-prompt-stream.use-case';
 import { basicPromptUseCase } from '../use-cases/basic-prompt.use-case';
 import { chatPromptStreamUseCase } from '../use-cases/chat-prompt-stream.use-case';
+import { generateQuiz } from '../use-cases/generate-quiz.use-case';
 import { getPokemonHelpUseCase } from '../use-cases/get-pokemon-help.use-case';
 import { getTriviaQuestionUseCase } from '../use-cases/get-trivia-question.use-case';
 import { imageGenerationStreamUseCase } from '../use-cases/image-generation-stream.use-case';
@@ -82,7 +83,7 @@ export class GeminiService {
   }
 
   getTriviaQuestion(triviaQuestionDto: TriviaQuestionDto) {
-    return getTriviaQuestionUseCase(this.ai, triviaQuestionDto);
+    return getTriviaQuestionUseCase(this.ai, triviaQuestionDto.topic);
   }
 
   async *imageGenerationStream(options: {
@@ -106,5 +107,9 @@ export class GeminiService {
         yield buffer;
       }
     }
+  }
+
+  generateQuiz(prompt: string) {
+    return generateQuiz(this.ai, prompt);
   }
 }
