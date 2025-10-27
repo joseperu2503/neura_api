@@ -1,11 +1,13 @@
 import { Content, GoogleGenAI } from '@google/genai';
 import { Injectable } from '@nestjs/common';
+import { QuestionParams } from 'src/common/intefaces/question-params';
 import { BasicPromptDto } from '../dto/basic-prompt.dto';
 import { PokemonHelperDto } from '../dto/pokemon-helper.dto';
 import { TriviaQuestionDto } from '../dto/trivia-question.dto';
 import { basicPromptStreamUseCase } from '../use-cases/basic-prompt-stream.use-case';
 import { basicPromptUseCase } from '../use-cases/basic-prompt.use-case';
 import { chatPromptStreamUseCase } from '../use-cases/chat-prompt-stream.use-case';
+import { explainAnswerUseCase } from '../use-cases/explain-answer.use-case';
 import { generateQuiz } from '../use-cases/generate-quiz.use-case';
 import { getPokemonHelpUseCase } from '../use-cases/get-pokemon-help.use-case';
 import { getTriviaQuestionUseCase } from '../use-cases/get-trivia-question.use-case';
@@ -39,7 +41,7 @@ export class GeminiService {
   }): AsyncGenerator<string> {
     const { prompt, files = [], history } = options;
 
-    const historyGemini = history.map((message) => {
+    const historyGemini: Content[] = history.map((message) => {
       const role = message.role === 'user' ? 'user' : 'model';
       return {
         role: role,
@@ -111,5 +113,15 @@ export class GeminiService {
 
   generateQuiz(prompt: string) {
     return generateQuiz(this.ai, prompt);
+  }
+
+  async *explainAnswer(
+    question: QuestionParams,
+    answer: number,
+  ): AsyncGenerator<string> {
+    const stream = await explainAnswerUseCase(this.ai, question, answer);
+    for await (const chunk of stream) {
+      yield chunk.text || '';
+    }
   }
 }

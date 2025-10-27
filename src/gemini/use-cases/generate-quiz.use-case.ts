@@ -22,7 +22,7 @@ export const generateQuiz = async (ai: GoogleGenAI, prompt: string) => {
         [
           {
             "question": "Texto de la pregunta",
-            "answers": [
+            "options": [
               "Opción 1",
               "Opción 2",
               "Opción 3",

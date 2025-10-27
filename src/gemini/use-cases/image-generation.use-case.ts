@@ -50,7 +50,6 @@ export const imageGenerationUseCase = async (
 
   let imageUrl = '';
   let text = '';
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const imageId = uuidV4();
 
   for (const part of response.candidates?.[0]?.content?.parts ?? []) {
