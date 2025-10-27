@@ -27,7 +27,6 @@ export class Prompt2QuizController {
     res.status(HttpStatus.OK);
 
     for await (const text of stream) {
-      console.log('Sending chunk:', text);
       res.write(text);
     }
 
