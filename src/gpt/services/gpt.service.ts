@@ -20,7 +20,7 @@ import {
 export class GptService {
   private openai = new OpenAI({
     baseURL: 'https://api.deepseek.com',
-    apiKey: process.env.API_KEY,
+    apiKey: process.env.DEEPSEEK_API_KEY,
   });
 
   async orthographyCheck(orthographyDto: OrthographyDto) {

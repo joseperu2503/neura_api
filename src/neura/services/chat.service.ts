@@ -34,7 +34,7 @@ export class ChatService {
     private geminiService: GeminiService,
   ) {}
 
-  completionModel: 'gpt' | 'gemini' = 'gemini';
+  completionModel: 'gpt' | 'gemini' = 'gpt';
 
   async createChat(userId: string): Promise<Chat> {
     const newChat = new this.chatModel({
