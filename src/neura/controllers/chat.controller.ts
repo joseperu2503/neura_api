@@ -7,7 +7,7 @@ import {
   Post,
   Res,
   UploadedFiles,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
