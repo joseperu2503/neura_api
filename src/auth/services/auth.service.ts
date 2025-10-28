@@ -74,6 +74,6 @@ export class AuthService {
     await user.save();
 
     const accessToken = this.getJwt({ id: user.id });
-    return { accessToken: accessToken, guestId: guestId, id: user.id };
+    return { accessToken };
   }
 }
