@@ -29,7 +29,11 @@ export class AuthService {
 
     await newUser.save();
 
-    const accessToken = this.getJwt({ id: newUser.id });
+    const accessToken = this.getJwt({
+      id: newUser.id,
+      email: email,
+      isGuest: false,
+    });
     return { accessToken };
   }
 
@@ -50,7 +54,11 @@ export class AuthService {
       throw new UnauthorizedException(`Credentials are not valid`);
     }
 
-    const accessToken = this.getJwt({ id: user.id });
+    const accessToken = this.getJwt({
+      id: user.id,
+      email: email,
+      isGuest: false,
+    });
     return { accessToken };
   }
 
@@ -73,7 +81,11 @@ export class AuthService {
 
     await user.save();
 
-    const accessToken = this.getJwt({ id: user.id });
+    const accessToken = this.getJwt({
+      id: user.id,
+      isGuest: true,
+      email: null,
+    });
     return { accessToken };
   }
 }
