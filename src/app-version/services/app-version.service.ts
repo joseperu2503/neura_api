@@ -46,7 +46,7 @@ export class AppVersionService {
     }
 
     return {
-      valid: isValid,
+      isValid: isValid,
       isActive: isActive,
       playStoreUrl:
         'https://play.google.com/store/apps/details?id=com.joseperezgil.neura',
