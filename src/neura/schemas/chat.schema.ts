@@ -31,8 +31,8 @@ export class Message {
   @Prop()
   feedbackDescription?: string;
 
-  @Prop({ type: String, enum: ['GOOD', 'BAD'], default: null })
-  feedbackType?: 'GOOD' | 'BAD' | null;
+  @Prop({ type: String, enum: ['good', 'bad'], default: null })
+  feedbackType?: 'good' | 'bad' | null;
 
   @Prop({ type: AssistantFileSchema, required: false })
   assistantFile?: AssistantFile;

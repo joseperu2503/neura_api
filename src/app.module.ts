@@ -4,6 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AppVersionModule } from './app-version/app-version.module';
 import { AuthModule } from './auth/auth.module';
 import { EncryptionModule } from './encryption/encryption.module';
 import { EncryptionInterceptor } from './encryption/interceptors/encryption.interceptor';
@@ -33,6 +34,8 @@ const enableEncryption = process.env.ENCRYPT === 'true';
     EncryptionModule,
 
     GeminiModule,
+
+    AppVersionModule,
   ],
   controllers: [],
   providers: [

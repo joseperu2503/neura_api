@@ -14,6 +14,6 @@ export class MessageFeedbackRequestDto {
 
   @IsString()
   @IsOptional()
-  @IsIn(['GOOD', 'BAD'])
-  feedbackType: 'GOOD' | 'BAD' | null;
+  @IsIn(['good', 'bad'])
+  feedbackType: 'good' | 'bad' | null;
 }
