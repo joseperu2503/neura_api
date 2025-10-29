@@ -46,6 +46,7 @@ RUN npm install --only=production
 
 # Copiar la aplicación compilada desde la etapa build
 COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/public ./public
 
 # Comando para iniciar la aplicación en producción
 CMD ["node", "dist/main"]
