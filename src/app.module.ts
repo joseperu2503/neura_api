@@ -27,10 +27,6 @@ const enableEncryption = process.env.ENCRYPT === 'true';
 
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-      serveStaticOptions: {
-        index: false,
-      },
-      exclude: ['/api/*'],
     }),
 
     NeuraModule,
