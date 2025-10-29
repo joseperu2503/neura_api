@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Patch, Post } from '@nestjs/common';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role, Roles } from 'src/auth/decorators/roles.decorator';
 import { CreateVersionRequestDto } from '../dto/create-version-request.dto';
@@ -26,7 +26,7 @@ export class AppVersionController {
     return this.versionService.update(body.id, body.isActive);
   }
 
-  @Get('check')
+  @Post('check')
   check(@Body() body: CreateVersionRequestDto) {
     return this.versionService.checkVersion(body.platform, body.version);
   }

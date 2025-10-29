@@ -1,7 +1,7 @@
 import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
+  BadRequestException,
+  Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -37,10 +37,20 @@ export class AppVersionService {
 
   async checkVersion(platform: PlatformEnum, version: string) {
     const appVersion = await this.versionModel.findOne({ platform, version });
-    if (!appVersion) return { valid: false, isActive: false };
+    let isValid = false;
+    let isActive = false;
+
+    if (appVersion) {
+      isActive = appVersion?.isActive;
+      isValid = true;
+    }
+
     return {
-      valid: true,
-      isActive: appVersion.isActive,
+      valid: isValid,
+      isActive: isActive,
+      playStoreUrl:
+        'https://play.google.com/store/apps/details?id=com.joseperezgil.neura',
+      appStoreUrl: '',
     };
   }
 
