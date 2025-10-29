@@ -32,6 +32,7 @@ const enableEncryption = process.env.ENCRYPT === 'true';
         index: false,
         fallthrough: false,
       },
+      serveRoot: '/public',
     }),
 
     NeuraModule,
