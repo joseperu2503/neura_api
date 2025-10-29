@@ -31,7 +31,11 @@ export class UserSeed {
     if (existingUser) return;
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new this.userModel({ email, password: hashedPassword });
+    const newUser = new this.userModel({
+      email,
+      password: hashedPassword,
+      role: 'admin',
+    });
 
     await newUser.save();
   }
