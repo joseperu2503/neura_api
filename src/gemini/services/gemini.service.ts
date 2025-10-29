@@ -1,5 +1,6 @@
 import { Content, GoogleGenAI } from '@google/genai';
 import { Injectable } from '@nestjs/common';
+import { MessageParam } from 'src/common/intefaces/message-param';
 import { QuestionParams } from 'src/common/intefaces/question-params';
 import { BasicPromptDto } from '../dto/basic-prompt.dto';
 import { PokemonHelperDto } from '../dto/pokemon-helper.dto';

@@ -20,11 +20,13 @@ export class AuthService {
 
   async register(email: string, password: string) {
     const existingUser = await this.userModel.findOne({ email });
+
     if (existingUser) {
       throw new BadRequestException(`User with email ${email} already exists`);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new this.userModel({ email, password: hashedPassword });
 
     await newUser.save();
@@ -34,6 +36,7 @@ export class AuthService {
       email: email,
       isGuest: false,
     });
+
     return { accessToken };
   }
 

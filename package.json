@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "cli": "ts-node -r tsconfig-paths/register ./src/cli.ts",
+    "cli:prod": "node dist/src/cli.js"
   },
   "dependencies": {
     "@google/genai": "^1.22.0",
@@ -35,6 +37,7 @@
     "class-validator": "^0.14.1",
     "crypto-js": "^4.2.0",
     "mongoose": "^8.9.5",
+    "nest-commander": "^3.20.1",
     "openai": "^4.78.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -44,7 +47,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.0.0",
+    "@nestjs/cli": "^10.4.9",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
     "@types/crypto-js": "^4.2.2",

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type AppVersionDocument = AppVersion & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, collection: 'app-versions' })
 export class AppVersion {
   @Prop({ required: true, type: String, enum: ['ios', 'android'] })
   platform: 'ios' | 'android';

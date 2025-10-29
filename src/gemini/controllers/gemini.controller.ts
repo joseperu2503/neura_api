@@ -12,6 +12,7 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 import { Response } from 'express';
+import { MessageParam } from 'src/common/intefaces/message-param';
 import { BasicPromptDto } from '../dto/basic-prompt.dto';
 import { ChatPromptDto } from '../dto/chat-prompt.dto';
 import { ImageGenerationDto } from '../dto/image-generation.dto';

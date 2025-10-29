@@ -33,3 +33,11 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod -p neura_api_prod
 
 docker compose -f docker-compose.prod.yml --env-file .env.app -p neura_api_app up -d --build
 ```
+
+
+Seed the database inside the container:
+
+```bash
+npm run cli -- seed
+npm run cli:prod -- see
+```

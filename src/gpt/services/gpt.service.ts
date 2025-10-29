@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources';
+import { MessageParam } from 'src/common/intefaces/message-param';
 import {
   OrthographyDto,
   ProsConsDiscusserDto,

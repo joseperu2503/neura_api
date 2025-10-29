@@ -11,6 +11,8 @@ import { EncryptionInterceptor } from './encryption/interceptors/encryption.inte
 import { GeminiModule } from './gemini/gemini.module';
 import { GptModule } from './gpt/gpt.module';
 import { NeuraModule } from './neura/neura.module';
+import { SeedCommand } from './seed/commands/seed.command';
+import { SeedModule } from './seed/seed.module';
 
 const enableEncryption = process.env.ENCRYPT === 'true';
 
@@ -36,6 +38,8 @@ const enableEncryption = process.env.ENCRYPT === 'true';
     GeminiModule,
 
     AppVersionModule,
+
+    SeedModule,
   ],
   controllers: [],
   providers: [
@@ -47,6 +51,7 @@ const enableEncryption = process.env.ENCRYPT === 'true';
           },
         ]
       : []),
+    SeedCommand,
   ],
 })
 export class AppModule {}

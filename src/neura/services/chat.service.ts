@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UserDocument } from 'src/auth/schemas/user.schema';
+import { MessageParam } from 'src/common/intefaces/message-param';
 import { GeminiService } from 'src/gemini/services/gemini.service';
 import { GptService } from 'src/gpt/services/gpt.service';
 import { v4 as uuidV4 } from 'uuid';
