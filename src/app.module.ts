@@ -26,6 +26,15 @@ const enableEncryption = process.env.ENCRYPT === 'true';
       `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`,
     ),
 
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveStaticOptions: {
+        index: false,
+        fallthrough: false,
+      },
+      serveRoot: '/public',
+    }),
+
     NeuraModule,
 
     AuthModule,
@@ -37,15 +46,6 @@ const enableEncryption = process.env.ENCRYPT === 'true';
     AppVersionModule,
 
     SeedModule,
-
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      serveStaticOptions: {
-        index: false,
-        fallthrough: true,
-      },
-      serveRoot: '/public',
-    }),
   ],
   controllers: [AppController],
   providers: [
