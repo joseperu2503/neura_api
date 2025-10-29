@@ -30,6 +30,7 @@ const enableEncryption = process.env.ENCRYPT === 'true';
       serveStaticOptions: {
         index: false,
       },
+      exclude: ['/api/*'],
     }),
 
     NeuraModule,
