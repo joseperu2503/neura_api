@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppVersionModule } from './app-version/app-version.module';
+import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { EncryptionModule } from './encryption/encryption.module';
 import { EncryptionInterceptor } from './encryption/interceptors/encryption.interceptor';
@@ -27,6 +28,10 @@ const enableEncryption = process.env.ENCRYPT === 'true';
 
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
+      serveStaticOptions: {
+        index: false,
+        fallthrough: false,
+      },
     }),
 
     NeuraModule,
@@ -41,7 +46,7 @@ const enableEncryption = process.env.ENCRYPT === 'true';
 
     SeedModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [
     ...(enableEncryption
       ? [
