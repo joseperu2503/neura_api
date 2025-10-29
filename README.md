@@ -39,5 +39,5 @@ Seed the database inside the container:
 
 ```bash
 npm run cli -- seed
-npm run cli:prod -- see
+npm run cli:prod -- seed
 ```

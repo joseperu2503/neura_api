@@ -25,6 +25,7 @@ export class UserSeed {
 
   private async create(params: UserSeedData) {
     const { email, password } = params;
+    if (email === '' || password === '') return;
 
     const existingUser = await this.userModel.findOne({ email });
     if (existingUser) return;
@@ -33,7 +34,6 @@ export class UserSeed {
     const newUser = new this.userModel({ email, password: hashedPassword });
 
     await newUser.save();
-    console.log(`User created: ${email}`);
   }
 }
 

@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "cli": "ts-node -r tsconfig-paths/register ./src/cli.ts",
-    "cli:prod": "node dist/src/cli.js"
+    "cli:prod": "node dist/cli.js"
   },
   "dependencies": {
     "@google/genai": "^1.22.0",
