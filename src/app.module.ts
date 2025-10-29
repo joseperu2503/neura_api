@@ -42,7 +42,7 @@ const enableEncryption = process.env.ENCRYPT === 'true';
       rootPath: join(__dirname, '..', 'public'),
       serveStaticOptions: {
         index: false,
-        fallthrough: false,
+        fallthrough: true,
       },
       serveRoot: '/public',
     }),
