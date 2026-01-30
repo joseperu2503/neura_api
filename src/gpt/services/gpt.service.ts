@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources';
 import { MessageParam } from 'src/common/intefaces/message-param';
+import { QuestionParams } from 'src/common/intefaces/question-params';
 import {
   OrthographyDto,
   ProsConsDiscusserDto,
@@ -10,6 +11,8 @@ import {
 } from '../dto';
 import {
   chatWithHistoryUseCase,
+  explainAnswerUseCase,
+  generateQuiz,
   orthographyCheckUseCase,
   prosConsDiscusserStreamUseCase,
   prosConsDiscusserUseCase,
@@ -72,6 +75,22 @@ export class GptService {
     ];
 
     const stream = await chatWithHistoryUseCase(this.openai, messages);
+
+    for await (const chunk of stream) {
+      const text = chunk.choices[0]?.delta?.content || '';
+      yield text; // emitir cada chunk de texto
+    }
+  }
+
+  generateQuiz(prompt: string) {
+    return generateQuiz(this.openai, prompt);
+  }
+
+  async *explainAnswer(
+    question: QuestionParams,
+    answer: number,
+  ): AsyncGenerator<string> {
+    const stream = await explainAnswerUseCase(this.openai, question, answer);
 
     for await (const chunk of stream) {
       const text = chunk.choices[0]?.delta?.content || '';
